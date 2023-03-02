@@ -11,17 +11,14 @@ function setup() {
 
 function draw() {
     background(40, 40, 40);
-
-
-    if (checkboxes.nodeCheckbox.checked() && !checkboxes.edgeCheckbox.checked() && !checkboxes.shortestPathCheckbox.checked() && mouseIsPressed) {
-        mouseClicked();
-    }
-
+    mousePressed();
 }
 
-function mouseClicked() {
-    circle(mouseX, mouseY, 30);
-    circle.display();
+function mousePressed() {
+    if (checkboxes.nodeCheckbox.checked() && !checkboxes.edgeCheckbox.checked() && !checkboxes.shortestPathCheckbox.checked() && mouseIsPressed) {
+        circle(mouseX, mouseY, 30);
+        circle.display();
+    }
 }
 
 
