@@ -1,15 +1,27 @@
+let checkboxes;
 function setup() {
     let cnv = createCanvas(windowWidth / 1.2, windowHeight / 1.2);
     cnv.position(windowWidth / 2 - width / 2, windowHeight / 2 - height / 2); // set the position of the canvas to the center of the window
     cnv.class('canvas'); // use .canvas { } to style in css
 
-    let checkboxes = new CheckBoxes(0, 60); // parameters indicate the position of checkboxes
+    checkboxes = new CheckBoxes(0, 60); // parameters indicate the position of checkboxes
     checkboxes.display();
     // checkboxes.addClass('checkbox'); // use .checkboxes { } to style in CSS
 }
 
 function draw() {
     background(40, 40, 40);
+
+
+    if (checkboxes.nodeCheckbox.checked() && !checkboxes.edgeCheckbox.checked() && !checkboxes.shortestPathCheckbox.checked() && mouseIsPressed) {
+        mouseClicked();
+    }
+
+}
+
+function mouseClicked() {
+    circle(mouseX, mouseY, 30);
+    circle.display();
 }
 
 
@@ -26,5 +38,9 @@ class CheckBoxes {
         this.nodeCheckbox.position(this.x, this.y);
         this.edgeCheckbox.position(this.x, this.y + 30);
         this.shortestPathCheckbox.position(this.x, this.y + 60);
+    }
+
+    isNodeChecked() {
+        if (this.nodeCheckbox.checked()) { return true; }
     }
 }
