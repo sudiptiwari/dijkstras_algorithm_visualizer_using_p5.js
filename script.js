@@ -3,8 +3,9 @@ let checkboxes;
 let circles = []; // Array to store the circles
 function setup() {
     cnv = createCanvas(windowWidth / 1.2, windowHeight / 1.2);
-    cnv.position(windowWidth / 2 - width / 2, windowHeight / 2 - height / 2); // set the position of the canvas to the center of the window
+    cnv.position(windowWidth / 2 - cnv.width / 2, windowHeight / 2 - cnv.height / 2); // set the position of the canvas to the center of the window
     cnv.class('canvas'); // use .canvas { } to style in css
+    // cnv.mouseClicked(isMouseClickedInsideCanvas);
 
     checkboxes = new CheckBoxes(0, 60); // parameters indicate the position of checkboxes
     checkboxes.display();
@@ -17,16 +18,16 @@ function draw() {
     // Loop through the array and display all the circles
     for (let i = 0; i < circles.length; i++) {
         let circle = circles[i];
-        noFill();
+        // noFill();
+        fill(40,40,40);
         stroke(255);
         strokeWeight(2);
         ellipse(circle.x, circle.y, 50, 50);
 
         textAlign(CENTER, CENTER);
         textSize(32);
-        fill(100);
+        fill(255);
         noStroke();
-        // text(circle.number, circle.x, circle.y);
         text(i+1, circle.x, circle.y);
     }
 }
@@ -34,12 +35,11 @@ function draw() {
 function isMouseClickedInsideCanvas()
 {
     if( mouseIsPressed &&
-    mouseX >= (windowWidth / 2 - cnv.width / 2) &&
-    mouseX <= (windowWidth / 2 + cnv.width / 2) &&
-    mouseY >= (windowHeight / 2 - cnv.height / 2) &&
-    mouseY <= (windowHeight / 2 + cnv.height / 2) &&
-    mouseX <= windowWidth &&
-    mouseY <= windowHeight ) {
+    mouseX >= (0) &&
+    mouseX <= (cnv.width) &&
+    mouseY >= (0) &&
+    mouseY <= (cnv.height) )
+    {
         return true;
     }
     else
@@ -49,15 +49,18 @@ function isMouseClickedInsideCanvas()
 }
 
 function mousePressed() {
+    console.log(isMouseClickedInsideCanvas());
     if (isMouseClickedInsideCanvas() && checkboxes.nodeCheckbox.checked() && !checkboxes.edgeCheckbox.checked() && !checkboxes.shortestPathCheckbox.checked() && mouseIsPressed) {
-        // circle(mouseX, mouseY, 30);
-        // circle.display();
         let circle = {
             x: mouseX,
             y: mouseY,
             number: circles.length + 1
         };
         circles.push(circle);
+    }
+
+    if (isMouseClickedInsideCanvas() && !checkboxes.nodeCheckbox.checked() && checkboxes.edgeCheckbox.checked() && !checkboxes.shortestPathCheckbox.checked() && mouseIsPressed) {
+        
     }
 }
 
