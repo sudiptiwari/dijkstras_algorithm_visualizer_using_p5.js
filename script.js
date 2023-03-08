@@ -67,6 +67,8 @@ function isMouseClickedInsideCanvas() {
 // Reset start and end node after mouse is released
 function mouseReleased() {
     if (!checkboxes.nodeCheckbox.checked() && checkboxes.edgeCheckbox.checked() && !checkboxes.shortestPathCheckbox.checked()) {
+        edges.push(edge);
+        console.log(`Edge drawn!`);
         startingCircle = null;
         endCircle = null;
         edge = null;
@@ -115,14 +117,12 @@ function mouseDragged() {
                         endCircle = circle;
                         edge.endX = endCircle.x;
                         edge.endY = endCircle.y;
-                        edges.push(edge);
                         break;
                     }
                 }
             }
         }
     }
-    // edges.push(edge);
 }
 
 
