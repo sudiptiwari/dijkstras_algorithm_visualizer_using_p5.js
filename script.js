@@ -6,6 +6,7 @@ let startingCircle;
 let endCircle;
 let edge; // edge variable to hold details inside drawing edges
 let starting_node_selected = false;
+let edge_draw_flag = false;
 function setup() {
     cnv = createCanvas(windowWidth / 1.2, windowHeight / 1.2);
     cnv.position(windowWidth / 2 - cnv.width / 2, windowHeight / 2 - cnv.height / 2); // set the position of the canvas to the center of the window
@@ -19,11 +20,22 @@ function setup() {
 
 function draw() {
     background(40, 40, 40);
+    // edge_draw_flag = false;
 
+    // line(mouseX, mouseY, pmouseX, pmouseY);
     for (let i = 0; i < edges.length; i++) {
         let e1 = edges[i];
         stroke(240, 234, 214);
         line(e1.startX, e1.startY, e1.endX, e1.endY);
+        // Calculate mid-point for showing e1.weight
+        let midX = (e1.startX + e1.endX) / 2;
+        let midY = (e1.startY + e1.endY) / 2;
+
+        //Draw e1.weight above the line
+        textSize(20);
+        textAlign(CENTER, CENTER);
+        text(e1.weight, midX - midY/40, midY - midX/40);
+
     }
 
     // Loop through the array and display all the circles
@@ -48,6 +60,8 @@ function draw() {
         noStroke();
         text(i + 1, circle.x, circle.y);
 
+        // console.log(circle.x, circle.y);
+
     }
 }
 
@@ -66,14 +80,18 @@ function isMouseClickedInsideCanvas() {
 
 // Reset start and end node after mouse is released
 function mouseReleased() {
+    // if Draw edges checkbox is checked and mouse is released
     if (!checkboxes.nodeCheckbox.checked() && checkboxes.edgeCheckbox.checked() && !checkboxes.shortestPathCheckbox.checked()) {
-        edges.push(edge);
-        console.log(`Edge drawn!`);
-        startingCircle = null;
-        endCircle = null;
-        edge = null;
-        starting_node_selected = false;
-
+        if (edge_draw_flag) {
+            edge.weight = prompt(`Please Enter Weight of edge: `);
+            edges.push(edge);
+            console.log(`Edge drawn!`);
+            startingCircle = null;
+            endCircle = null;
+            // edge = null;
+            starting_node_selected = false;
+            edge_draw_flag = false;
+        }
     }
 }
 
@@ -86,22 +104,27 @@ function mousePressed() {
             number: circles.length + 1
         };
         circles.push(circle);
+        console.log(`Node drawn!`);
     }
 
 }
 
 // Draw edges
 function mouseDragged() {
-    if (!checkboxes.edgeCheckbox.checked()) {
+    if (!checkboxes.edgeCheckbox.checked() || !isMouseClickedInsideCanvas()) {
         return; // don't run this function if "Draw Edge" checkbox is not selected
     }
-    if (!checkboxes.nodeCheckbox.checked() && checkboxes.edgeCheckbox.checked() && !checkboxes.shortestPathCheckbox.checked()) {
+    if (isMouseClickedInsideCanvas() && !checkboxes.nodeCheckbox.checked() && checkboxes.edgeCheckbox.checked() && !checkboxes.shortestPathCheckbox.checked()) {
         if (!starting_node_selected) {
             for (let i = 0; i < circles.length; i++) {
                 let circle = circles[i];
                 let d_start = dist(mouseX, mouseY, circle.x, circle.y);
                 if (d_start < 25) {
                     startingCircle = circle;
+                    // edge = {
+                    //     startX: startingCircle.x,
+                    //     startY: startingCircle.y,
+                    // }
                     edge = new Edge(startingCircle.x, startingCircle.y);
                     starting_node_selected = true;
                     break;
@@ -109,6 +132,7 @@ function mouseDragged() {
             }
         }
         if (starting_node_selected) {
+            edge_draw_flag = false;
             for (let i = 0; i < circles.length; i++) {
                 let circle = circles[i];
                 if (circle != startingCircle) {
@@ -117,6 +141,7 @@ function mouseDragged() {
                         endCircle = circle;
                         edge.endX = endCircle.x;
                         edge.endY = endCircle.y;
+                        edge_draw_flag = true;
                         break;
                     }
                 }
