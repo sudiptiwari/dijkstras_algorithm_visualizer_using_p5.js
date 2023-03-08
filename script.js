@@ -34,7 +34,7 @@ function draw() {
         //Draw e1.weight above the line
         textSize(20);
         textAlign(CENTER, CENTER);
-        text(e1.weight, midX - midY/40, midY - midX/40);
+        text(e1.weight, midX - midY / 40, midY - midX / 40);
 
     }
 
@@ -83,7 +83,10 @@ function mouseReleased() {
     // if Draw edges checkbox is checked and mouse is released
     if (!checkboxes.nodeCheckbox.checked() && checkboxes.edgeCheckbox.checked() && !checkboxes.shortestPathCheckbox.checked()) {
         if (edge_draw_flag) {
-            edge.weight = prompt(`Please Enter Weight of edge: `);
+            edge.weight = 0;
+            while (edge.weight == 0) {
+                edge.weight = prompt(`Please Enter Weight of edge: `);
+            }
             edges.push(edge);
             console.log(`Edge drawn!`);
             startingCircle = null;
