@@ -5,6 +5,7 @@ let edges = []; // Array to store the edges
 let startingCircle;
 let endCircle;
 let edge; // edge variable to hold details inside drawing edges
+let starting_node_selected = false;
 function setup() {
     cnv = createCanvas(windowWidth / 1.2, windowHeight / 1.2);
     cnv.position(windowWidth / 2 - cnv.width / 2, windowHeight / 2 - cnv.height / 2); // set the position of the canvas to the center of the window
@@ -23,10 +24,10 @@ function draw() {
         let circle = circles[i];
         // noFill();
         if (circle == startingCircle) {
-            fill(255, 0, 0); // Set fill color to red if selected
+            fill(201,127,127); // Set fill color to red if selected
         }
         else if (circle == endCircle) {
-            fill(0, 255, 0);
+            fill(143,188,143);
         }
         else { fill(40, 40, 40); }
         stroke(255);
@@ -56,6 +57,11 @@ function isMouseClickedInsideCanvas() {
     }
 }
 
+// function mouseReleased()
+// {
+//     return true;
+// }
+
 function mousePressed() {
     // creating nodes
     if (isMouseClickedInsideCanvas() && checkboxes.nodeCheckbox.checked() && !checkboxes.edgeCheckbox.checked() && !checkboxes.shortestPathCheckbox.checked() && mouseIsPressed) {
@@ -68,29 +74,79 @@ function mousePressed() {
     }
 
     // drawing edges
-    if (isMouseClickedInsideCanvas() && !checkboxes.nodeCheckbox.checked() && checkboxes.edgeCheckbox.checked() && !checkboxes.shortestPathCheckbox.checked()) {
-        if (mousePressed) {
+    // if (isMouseClickedInsideCanvas() && !checkboxes.nodeCheckbox.checked() && checkboxes.edgeCheckbox.checked() && !checkboxes.shortestPathCheckbox.checked()) {
+    //     if (mousePressed) {
+    //         for (let i = 0; i < circles.length; i++) {
+    //             let circle = circles[i];
+    //             let d = dist(mouseX, mouseY, circle.x, circle.y);
+    //             if (d < 25) {
+    //                 if (!startingCircle) {
+    //                     // If the mouse is inside the circle, select it as the starting circle
+    //                     startingCircle = circle;
+    //                     startingCircle.fillColor = color(255, 0, 0);
+    //                     edge = new Edge(startingCircle.x, startingCircle.y);
+    //                   } else {
+    //                     // If the mouse is inside another circle, select it as the ending circle
+    //                     endCircle = circle;
+    //                     endCircle.fillColor = color(0, 255, 0);
+    //                     edge.endX = endCircle.x;
+    //                     edge.endY = endCircle.y;
+    //                   }
+    //                   break;
+    //                 // // If the mouse is inside the circle, select it
+    //                 // startingCircle = circle;
+    //                 // // startingCircle.fillColor(255,0,0);
+    //                 // edge = new Edge(startingCircle.x, startingCircle.y);
+    //                 // break;
+    //             }
+    //         }
+    //         // function mouseReleased()
+    //         // {
+    //         //     for (let i = 0; i < circles.length; i++) {
+    //         //         let circle = circles[i];
+    //         //         let d = dist(mouseX, mouseY, circle.x, circle.y);
+    //         //         if (d < 25) {
+    //         //             // If the mouse is inside the circle, select it
+    //         //             endCircle = circle;
+    //         //             // endCircle.fillColor(0,255,0);
+    //         //             console.log(`End circle detected`);
+    //         //             edge.endX = endCircle.x;
+    //         //             edge.endY = endCircle.y;
+    //         //             break;
+    //         //         }
+    //         //     }
+    //         // }
+    //     }
+
+    //     // let edge = new Edge()
+    // }
+}
+
+// Draw edges
+function mouseDragged() {
+    if (!checkboxes.edgeCheckbox.checked()) {
+        return; // don't run this function if "Draw Edge" checkbox is not selected
+    }
+    if (!checkboxes.nodeCheckbox.checked() && checkboxes.edgeCheckbox.checked() && !checkboxes.shortestPathCheckbox.checked()) {
+        if (!starting_node_selected) {
             for (let i = 0; i < circles.length; i++) {
                 let circle = circles[i];
-                let d = dist(mouseX, mouseY, circle.x, circle.y);
-                if (d < 25) {
-                    // If the mouse is inside the circle, select it
+                let d_start = dist(mouseX, mouseY, circle.x, circle.y);
+                if (d_start < 25) {
                     startingCircle = circle;
-                    // startingCircle.fillColor(255,0,0);
                     edge = new Edge(startingCircle.x, startingCircle.y);
+                    starting_node_selected = true;
                     break;
                 }
             }
-            if(mouseReleased)
-            {
-                for (let i = 0; i < circles.length; i++) {
-                    let circle = circles[i];
-                    let d = dist(mouseX, mouseY, circle.x, circle.y);
-                    if (d < 25) {
-                        // If the mouse is inside the circle, select it
+        }
+        if (starting_node_selected) {
+            for (let i = 0; i < circles.length; i++) {
+                let circle = circles[i];
+                if (circle != startingCircle) {
+                    let d_end = dist(mouseX, mouseY, circle.x, circle.y);
+                    if (d_end < 25) {
                         endCircle = circle;
-                        // endCircle.fillColor(0,255,0);
-                        console.log(`End circle detected`);
                         edge.endX = endCircle.x;
                         edge.endY = endCircle.y;
                         break;
@@ -98,9 +154,8 @@ function mousePressed() {
                 }
             }
         }
-
-        // let edge = new Edge()
     }
+    console.log(edge.startX, edge.startY, edge.endX, edge.endY);
 }
 
 
