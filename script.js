@@ -22,6 +22,7 @@ function setup() {
 }
 
 function draw() {
+    frameRate(60);
     background(40, 40, 40);
     // edge_draw_flag = false;
 
@@ -66,8 +67,11 @@ function draw() {
         // console.log(circle.x, circle.y);
 
     }
-    graph = new Graph();
-    graph.display2dArray();
+    if (!checkboxes.nodeCheckbox.checked() && !checkboxes.edgeCheckbox.checked() && checkboxes.shortestPathCheckbox.checked()) {
+        frameRate(20);
+        graph = new Graph();
+        graph.display2dArray();
+    }
 }
 
 function isMouseClickedInsideCanvas() {
@@ -130,6 +134,7 @@ function mouseDragged() {
                 if (d_start < 25) {
                     startingCircle = circle;
                     edge = new Edge(startingCircle.x, startingCircle.y);
+                    edge.sourceCircle = i;
                     starting_node_selected = true;
                     break;
                 }
@@ -145,6 +150,7 @@ function mouseDragged() {
                         endCircle = circle;
                         edge.endX = endCircle.x;
                         edge.endY = endCircle.y;
+                        edge.destCircle = i;
                         edge_draw_flag = true;
                         break;
                     }
@@ -187,41 +193,76 @@ class CheckBoxes {
 
 
 class Edge {
-    constructor(startX, startY, endX, endY, weight) {
+    constructor(startX, startY, sourceCircle, endX, endY, destCircle, weight) {
         this.startX = startX;
         this.startY = startY;
+        this.sourceCircle = sourceCircle;
         this.endX = endX;
         this.endY = endY;
+        this.destCircle = destCircle;
         this.weight = weight;
     }
 }
 
 class Graph {
     constructor() {
-        this.noOfEdges = circles.length;
+        this.noOfNodes = circles.length
+        this.noOfEdges = edges.length;
+        // set up and initialize all element to 0
         this.edgesMatrix = [];
-            for (let i = 0; i < this.noOfEdges; i++) {
-                this.edgesMatrix[i] = [];
-                for (let j = 0; j < this.noOfEdges; j++) {
-                    if(circles[i].x === edges[j].startX && circles[i].y === edges[j].startY) {
-                        
+        for (let i = 0; i < this.noOfNodes; i++) {
+            this.edgesMatrix[i] = new Array(this.noOfNodes).fill(0);
+        }
+
+        // set non diagonal elements to weight(make directed graph)
+        // for (let i = 0; i < this.noOfEdges; i++) {
+        //     let e = edges[i];
+        //     var statingCircleFound = false;
+        //     var endingCircleFound = false;
+        //     for(let j = 0; j < this.noOfEdges; j++) {
+        //         let circle = circles[j];
+        //         if(statingCircleFound && endingCircleFound) {
+        //             break;
+        //         }
+        //         if(!statingCircleFound && e.startX == circle.x && e.startY == circle.y) {
+        //             var row = j;
+        //             statingCircleFound = true;
+        //         } 
+        //         if(!endingCircleFound && e.endX == circle.x && e.endY == circle.y) {
+        //             var column = j;
+        //             endingCircleFound = true;
+        //         }
+        //     }
+        //     this.edgesMatrix[row][column]  = e.weight;
+        // }
+        for (let i = 0; i < this.noOfEdges; i++) {
+            let e = edges[i];
+            this.edgesMatrix[e.sourceCircle][e.destCircle]  = e.weight;
+        }
+
+        
+        // transform to non directed graph
+        for(let i = 0; i < this.noOfNodes; i++) {
+            for(let j = 0; j < this.noOfNodes; j++) {
+                if(i != j) {
+                    if(this.edgesMatrix[i][j] == 0 && this.edgesMatrix[j][i] != 0) {
+                        this.edgesMatrix[i][j] = this.edgesMatrix[j][i];
                     }
-                    this.edgesMatrix[i][j] = i + j;
                 }
             }
+        }
     }
 
     display2dArray() {
         // Dipslay 2-D array
-        for (let i = 0; i < this.noOfEdges; i++) {
-            for (let i = 0; i < this.noOfEdges; i++) {
-                for (let j = 0; j < this.noOfEdges; j++) {
+            for (let i = 0; i < this.noOfNodes; i++) {
+                for (let j = 0; j < this.noOfNodes; j++) {
                     console.log(this.edgesMatrix[i][j]);
                 }
                 console.log(`\n`);
             }
-        }
     }
 }
+
 
 
