@@ -7,6 +7,9 @@ let endCircle;
 let edge; // edge variable to hold details inside drawing edges
 let starting_node_selected = false;
 let edge_draw_flag = false;
+let graph;
+// let circlesCount = 0;
+
 function setup() {
     cnv = createCanvas(windowWidth / 1.2, windowHeight / 1.2);
     cnv.position(windowWidth / 2 - cnv.width / 2, windowHeight / 2 - cnv.height / 2); // set the position of the canvas to the center of the window
@@ -58,11 +61,13 @@ function draw() {
         textSize(32);
         fill(255);
         noStroke();
-        text(i + 1, circle.x, circle.y);
+        text(circle.number, circle.x, circle.y);
 
         // console.log(circle.x, circle.y);
 
     }
+    graph = new Graph();
+    graph.display2dArray();
 }
 
 function isMouseClickedInsideCanvas() {
@@ -84,8 +89,8 @@ function mouseReleased() {
     if (!checkboxes.nodeCheckbox.checked() && checkboxes.edgeCheckbox.checked() && !checkboxes.shortestPathCheckbox.checked()) {
         if (edge_draw_flag) {
             edge.weight = 0;
-            while (edge.weight == 0) {
-                edge.weight = prompt(`Please Enter Weight of edge: `);
+            while (edge.weight == 0 || edge.weight !== edge.weight /* only NaN is not equal to itself */) {
+                edge.weight = parseInt(prompt(`Please Enter Weight of edge: `));
             }
             edges.push(edge);
             console.log(`Edge drawn!`);
@@ -107,7 +112,7 @@ function mousePressed() {
             number: circles.length + 1
         };
         circles.push(circle);
-        console.log(`Node drawn!`);
+        console.log(`Node ${(circle.number)} drawn!`);
     }
 
 }
@@ -124,10 +129,6 @@ function mouseDragged() {
                 let d_start = dist(mouseX, mouseY, circle.x, circle.y);
                 if (d_start < 25) {
                     startingCircle = circle;
-                    // edge = {
-                    //     startX: startingCircle.x,
-                    //     startY: startingCircle.y,
-                    // }
                     edge = new Edge(startingCircle.x, startingCircle.y);
                     starting_node_selected = true;
                     break;
@@ -153,14 +154,28 @@ function mouseDragged() {
     }
 }
 
-
 class CheckBoxes {
     constructor(x, y) {
         this.nodeCheckbox = createCheckbox(' Draw Node', false);
         this.edgeCheckbox = createCheckbox(' Draw Edge', false);
         this.shortestPathCheckbox = createCheckbox(' Find Path', false);
+        this.checkboxes = [this.nodeCheckbox, this.edgeCheckbox, this.shortestPathCheckbox];
         this.x = x;
         this.y = y;
+
+        // Add event listeners to each checkbox
+        for (let checkbox of this.checkboxes) {
+            checkbox.changed(() => {
+                if (checkbox.checked()) {
+                    // Uncheck all other checkboxes
+                    for (let otherCheckbox of this.checkboxes) {
+                        if (otherCheckbox !== checkbox) {
+                            otherCheckbox.checked(false); // Uncheck all other checkboxes
+                        }
+                    }
+                }
+            });
+        }
     }
 
     display() {
@@ -169,6 +184,7 @@ class CheckBoxes {
         this.shortestPathCheckbox.position(this.x, this.y + 60);
     }
 }
+
 
 class Edge {
     constructor(startX, startY, endX, endY, weight) {
@@ -179,3 +195,33 @@ class Edge {
         this.weight = weight;
     }
 }
+
+class Graph {
+    constructor() {
+        this.noOfEdges = circles.length;
+        this.edgesMatrix = [];
+            for (let i = 0; i < this.noOfEdges; i++) {
+                this.edgesMatrix[i] = [];
+                for (let j = 0; j < this.noOfEdges; j++) {
+                    if(circles[i].x === edges[j].startX && circles[i].y === edges[j].startY) {
+                        
+                    }
+                    this.edgesMatrix[i][j] = i + j;
+                }
+            }
+    }
+
+    display2dArray() {
+        // Dipslay 2-D array
+        for (let i = 0; i < this.noOfEdges; i++) {
+            for (let i = 0; i < this.noOfEdges; i++) {
+                for (let j = 0; j < this.noOfEdges; j++) {
+                    console.log(this.edgesMatrix[i][j]);
+                }
+                console.log(`\n`);
+            }
+        }
+    }
+}
+
+
