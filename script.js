@@ -67,11 +67,11 @@ function draw() {
         // console.log(circle.x, circle.y);
 
     }
-    if (!checkboxes.nodeCheckbox.checked() && !checkboxes.edgeCheckbox.checked() && checkboxes.shortestPathCheckbox.checked()) {
-        frameRate(20);
-        graph = new Graph();
-        graph.display2dArray();
-    }
+    // if (!checkboxes.nodeCheckbox.checked() && !checkboxes.edgeCheckbox.checked() && checkboxes.shortestPathCheckbox.checked()) {
+    //     frameRate(20);
+    //     graph = new Graph();
+    //     graph.display2dArray();
+    // }
 }
 
 function isMouseClickedInsideCanvas() {
@@ -248,6 +248,10 @@ class Graph {
                     if(this.edgesMatrix[i][j] == 0 && this.edgesMatrix[j][i] != 0) {
                         this.edgesMatrix[i][j] = this.edgesMatrix[j][i];
                     }
+                    if(this.edgesMatrix[i][j] == 0 && this.edgesMatrix[j][i] == 0) {
+                        this.edgesMatrix[i][j] = -1; // ~ no path
+                        this.edgesMatrix[j][i] = -1; // ~ no path
+                    }
                 }
             }
         }
@@ -263,6 +267,8 @@ class Graph {
             }
     }
 }
+
+
 
 
 
