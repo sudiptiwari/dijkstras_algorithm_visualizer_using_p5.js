@@ -10,6 +10,7 @@ let edge_draw_flag = false;
 let graph;
 const inf = 99999;
 let startNode = inf; // variable to store start node for algorithm implementation
+let endNode = inf;
 // let circlesCount = 0;
 
 function setup() {
@@ -57,6 +58,9 @@ function draw() {
         else { fill(40, 40, 40); }
         if(circle.number == startNode) {
             fill(25, 202, 185);
+        }
+        if(circle.number == endNode) {
+            fill(229, 0, 169);
         }
         stroke(255);
         strokeWeight(2);
@@ -135,6 +139,17 @@ function mousePressed() {
             }
         }
     }
+
+    if (checkboxes.endNodeCheckbox.checked() && isMouseClickedInsideCanvas()) {
+        for (let i = 0; i < circles.length; i++) {
+            let circle = circles[i];
+            let d_start = dist(mouseX, mouseY, circle.x, circle.y);
+            if (d_start < 25) {
+                endNode = circle.number;
+                console.log(`Node ${(endNode)} selected as end node`);
+            }
+        }
+    }
 }
 
 // Draw edges
@@ -181,8 +196,9 @@ class CheckBoxes {
         this.nodeCheckbox = createCheckbox(' Draw Node', false);
         this.edgeCheckbox = createCheckbox(' Draw Edge', false);
         this.startNodeCheckbox = createCheckbox(' Start Node', false);
+        this.endNodeCheckbox = createCheckbox(' End Node', false);
         this.shortestPathCheckbox = createCheckbox(' Find Path', false);
-        this.checkboxes = [this.nodeCheckbox, this.edgeCheckbox, this.startNodeCheckbox, this.shortestPathCheckbox];
+        this.checkboxes = [this.nodeCheckbox, this.edgeCheckbox, this.startNodeCheckbox, this.endNodeCheckbox, this.shortestPathCheckbox];
         this.x = x;
         this.y = y;
 
@@ -205,7 +221,8 @@ class CheckBoxes {
         this.nodeCheckbox.position(this.x, this.y);
         this.edgeCheckbox.position(this.x, this.y + 30);
         this.startNodeCheckbox.position(this.x, this.y + 60);
-        this.shortestPathCheckbox.position(this.x, this.y + 90);
+        this.endNodeCheckbox.position(this.x, this.y + 90);
+        this.shortestPathCheckbox.position(this.x, this.y + 120);
     }
 }
 
@@ -224,7 +241,7 @@ class Edge {
 
 class Graph {
     constructor() {
-        this.noOfNodes = circles.length
+        this.noOfNodes = circles.length;
         this.noOfEdges = edges.length;
         this.src = startNode;
         this.sptSet = [];
