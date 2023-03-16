@@ -8,7 +8,8 @@ let edge; // edge variable to hold details inside drawing edges
 let starting_node_selected = false;
 let edge_draw_flag = false;
 let graph;
-let startNode = 9999; // variable to store start node for algorithm implementation
+const inf = 99999;
+let startNode = inf; // variable to store start node for algorithm implementation
 // let circlesCount = 0;
 
 function setup() {
@@ -225,6 +226,11 @@ class Graph {
     constructor() {
         this.noOfNodes = circles.length
         this.noOfEdges = edges.length;
+        this.src = startNode;
+        this.sptSet = [];
+        this.distToNodes = new Array(this.noOfNodes).fill(inf);
+        this.distToNodes[this.src] = 0;
+
         // set up and initialize all element to 0
         this.edgesMatrix = [];
         for (let i = 0; i < this.noOfNodes; i++) {
@@ -246,9 +252,9 @@ class Graph {
         //             statingCircleFound = true;
         //         } 
         //         if(!endingCircleFound && e.endX == circle.x && e.endY == circle.y) {
-        //             var column = j;
-        //             endingCircleFound = true;
-        //         }
+        //             var column = j;findShortestPath(startNode) {
+    //     let i = 
+    // }
         //     }
         //     this.edgesMatrix[row][column]  = e.weight;
         // }
@@ -283,99 +289,14 @@ class Graph {
             console.log(`\n`);
         }
     }
+
+    // findShortestPath(startNode) {
+    //     let i = 
+    // }
 }
 
 
 
-// A Javascript program for Dijkstra's single
-// source shortest path algorithm.
-// The program is for adjacency matrix
-// representation of the graph    
-let V = 9;
 
-// A utility function to find the
-// vertex with minimum distance
-// value, from the set of vertices
-// not yet included in shortest
-// path tree
-function minDistance(dist, sptSet) {
 
-    // Initialize min value
-    let min = Number.MAX_VALUE;
-    let min_index = -1;
-
-    for (let v = 0; v < V; v++) {
-        if (sptSet[v] == false && dist[v] <= min) {
-            min = dist[v];
-            min_index = v;
-        }
-    }
-    return min_index;
-}
-
-// A utility function to print
-// the constructed distance array
-function printSolution(dist) {
-    document.write("Vertex \t\t Distance from Source<br>");
-    for (let i = 0; i < V; i++) {
-        document.write(i + " \t\t " +
-            dist[i] + "<br>");
-    }
-}
-
-// Function that implements Dijkstra's
-// single source shortest path algorithm
-// for a graph represented using adjacency
-// matrix representation
-// function dijkstra(graph, src) {
-//     let dist = new Array(V);
-//     let sptSet = new Array(V);
-
-//     // Initialize all distances as
-//     // INFINITE and stpSet[] as false
-//     for (let i = 0; i < V; i++) {
-//         dist[i] = Number.MAX_VALUE;
-//         sptSet[i] = false;
-//     }
-
-//     // Distance of source vertex
-//     // from itself is always 0
-//     dist[src] = 0;
-
-//     // Find shortest path for all vertices
-//     for (let count = 0; count < V - 1; count++) {
-
-//         // Pick the minimum distance vertex
-//         // from the set of vertices not yet
-//         // processed. u is always equal to
-//         // src in first iteration.
-//         let u = minDistance(dist, sptSet);
-
-//         // Mark the picked vertex as processed
-//         sptSet[u] = true;
-
-//         // Update dist value of the adjacent
-//         // vertices of the picked vertex.
-//         for (let v = 0; v < V; v++) {
-
-//             // Update dist[v] only if is not in
-//             // sptSet, there is an edge from u
-//             // to v, and total weight of path
-//             // from src to v through u is smaller
-//             // than current value of dist[v]
-//             if (!sptSet[v] && graph[u][v] != 0 &&
-//                 dist[u] != Number.MAX_VALUE &&
-//                 dist[u] + graph[u][v] < dist[v]) {
-//                 dist[v] = dist[u] + graph[u][v];
-//             }
-//         }
-//     }
-
-//     // Print the constructed distance array
-//     printSolution(dist);
-// }
-
-// // Driver code
-
-// dijkstra(graph, 0);
 
