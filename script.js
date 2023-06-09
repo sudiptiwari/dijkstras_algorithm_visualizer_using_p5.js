@@ -2,6 +2,7 @@ let cnv;
 let checkboxes;
 let circles = []; // Array to store the circles
 let edges = []; // Array to store the edges
+let shortestPathEdges = []; // Array to store final result of edges that are in shortest path between start and end node
 let startingCircle;
 let endCircle;
 let edge; // edge variable to hold details inside drawing edges
@@ -11,7 +12,6 @@ let graph;
 const inf = 99999;
 let startNode = inf; // variable to store start node for algorithm implementation
 let endNode = inf;
-// let circlesCount = 0;
 
 function setup() {
     cnv = createCanvas(windowWidth / 1.2, windowHeight / 1.2);
@@ -44,6 +44,21 @@ function draw() {
         text(e1.weight, midX - midY / 40, midY - midX / 40);
 
     }
+    // Display shortest path edges with another color
+    for (let i = 0; i < shortestPathEdges.length; i++) {
+        let e2 = shortestPathEdges[i];
+        stroke(206, 250, 5);
+        line(e2.startX, e2.startY, e2.endX, e2.endY);
+        // Calculate mid-point for showing e1.weight
+        let midX = (e2.startX + e2.endX) / 2;
+        let midY = (e2.startY + e2.endY) / 2;
+
+        //Draw e1.weight above the line
+        textSize(20);
+        textAlign(CENTER, CENTER);
+        text(e2.weight, midX - midY / 40, midY - midX / 40);
+
+    }
 
     // Loop through the array and display all the circles
     for (let i = 0; i < circles.length; i++) {
@@ -56,10 +71,10 @@ function draw() {
             fill(143, 188, 143);
         }
         else { fill(40, 40, 40); }
-        if(circle.number == startNode) {
+        if (circle.number == startNode) {
             fill(25, 202, 185);
         }
-        if(circle.number == endNode) {
+        if (circle.number == endNode) {
             fill(229, 0, 169);
         }
         stroke(255);
@@ -74,14 +89,8 @@ function draw() {
         noStroke();
         text(circle.number, circle.x, circle.y);
 
-        // console.log(circle.x, circle.y);
+    }
 
-    }
-    if (!checkboxes.nodeCheckbox.checked() && !checkboxes.edgeCheckbox.checked() && checkboxes.shortestPathCheckbox.checked()) {
-        frameRate(20);
-        graph = new Graph();
-        // graph.display2dArray();
-    }
 }
 
 function isMouseClickedInsideCanvas() {
@@ -150,6 +159,13 @@ function mousePressed() {
             }
         }
     }
+    if (checkboxes.shortestPathCheckbox.checked()) {
+        console.log(`New graph created.`);
+        let graph = new Graph();
+        graph.implement_dijkstra();
+        graph.displayShortestPathEdges();
+    }
+
 }
 
 // Draw edges
@@ -236,6 +252,8 @@ class Edge {
         this.endY = endY;
         this.destCircle = destCircle;
         this.weight = weight;
+        this.algorithmExecuted = false;
+        this.edgesCreated = false;
     }
 }
 
@@ -243,7 +261,8 @@ class Graph {
     constructor() {
         this.noOfNodes = circles.length;
         this.noOfEdges = edges.length;
-        this.src = startNode;
+        this.src = startNode - 1; // changed to startNode-1
+        this.des = endNode - 1; 
         this.sptSet = [];
         this.distToNodes = new Array(this.noOfNodes).fill(inf);
         this.distToNodes[this.src] = 0;
@@ -253,28 +272,6 @@ class Graph {
         for (let i = 0; i < this.noOfNodes; i++) {
             this.edgesMatrix[i] = new Array(this.noOfNodes).fill(0);
         }
-
-        // set non diagonal elements to weight(make directed graph)
-        // for (let i = 0; i < this.noOfEdges; i++) {
-        //     let e = edges[i];
-        //     var statingCircleFound = false;
-        //     var endingCircleFound = false;
-        //     for(let j = 0; j < this.noOfEdges; j++) {
-        //         let circle = circles[j];
-        //         if(statingCircleFound && endingCircleFound) {
-        //             break;
-        //         }
-        //         if(!statingCircleFound && e.startX == circle.x && e.startY == circle.y) {
-        //             var row = j;
-        //             statingCircleFound = true;
-        //         } 
-        //         if(!endingCircleFound && e.endX == circle.x && e.endY == circle.y) {
-        //             var column = j;findShortestPath(startNode) {
-    //     let i = 
-    // }
-        //     }
-        //     this.edgesMatrix[row][column]  = e.weight;
-        // }
         for (let i = 0; i < this.noOfEdges; i++) {
             let e = edges[i];
             this.edgesMatrix[e.sourceCircle][e.destCircle] = e.weight;
@@ -295,6 +292,7 @@ class Graph {
                 }
             }
         }
+
     }
 
     display2dArray() {
@@ -307,13 +305,66 @@ class Graph {
         }
     }
 
-    // findShortestPath(startNode) {
-    //     let i = 
-    // }
+    implement_dijkstra() {
+        let visited = new Array(this.noOfNodes).fill(false); // creates array of length this.noOfNodes and sets all the value to false
+        let parent = new Array(this.noOfNodes).fill(-1);
+        let distance = new Array(this.noOfNodes).fill(inf);
+        distance[this.src] = 0;
+        visited[this.src] = true;
+
+        let row = this.src;
+
+        for (let v = 0; v < this.noOfNodes - 1; v++) {
+            // update distance matrix if necessary
+            let minDistance = inf;
+            let minIndex = -1;
+            for (let i = 0; i < this.noOfNodes; i++) {
+                if (!visited[i] && (this.edgesMatrix[row][i] != -1) && (distance[row] + this.edgesMatrix[row][i]) <= distance[i]) {
+                    distance[i] = distance[row] + this.edgesMatrix[row][i];
+                    parent[i] = row;
+                }
+            }
+
+            // let minDistance = inf;
+            // let minIndex = -1;
+            for (let i = 0; i < this.noOfNodes; i++) {
+                if (!visited[i] && distance[i] < minDistance) {
+                    minDistance = distance[i];
+                    minIndex = i;
+                }
+            }
+
+            visited[minIndex] = true;
+            // parent[minIndex] = row;
+            row = minIndex;
+        }
+
+        let temp_src = this.des;
+        for(let i = 0; i < this.noOfNodes; i++) {
+            let edgeWeight = this.edgesMatrix[parent[temp_src]][temp_src];
+            shortestPathEdges.push(new Edge(
+                circles[parent[temp_src]].x, circles[parent[temp_src]].y, parent[temp_src],
+                circles[temp_src].x, circles[temp_src].y, temp_src,
+                edgeWeight
+            ));
+            temp_src = parent[temp_src];
+            if(temp_src == this.src ) {
+                break;
+            }
+        }
+
+    }
+
+    displayShortestPathEdges() {
+        for (let i = 0; i < shortestPathEdges.length; i++) {
+            let edge = shortestPathEdges[i];
+            console.log(`Edge ${i + 1}:`);
+            console.log(`Start: (${edge.startX}, ${edge.startY}), Node ${edge.sourceCircle}`);
+            console.log(`End: (${edge.endX}, ${edge.endY}), Node ${edge.destCircle}`);
+            console.log(`Weight: ${edge.weight}`);
+            console.log('---');
+        }
+    }
 }
-
-
-
-
 
 
