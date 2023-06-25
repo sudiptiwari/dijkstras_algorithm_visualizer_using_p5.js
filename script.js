@@ -28,6 +28,12 @@ function draw() {
     frameRate(60);
     background(40, 40, 40);
     // edge_draw_flag = false;
+    if (checkboxes.shortestPathCheckbox.checked()) {
+        console.log(`New graph created.`);
+        let graph = new Graph();
+        graph.implement_dijkstra();
+        graph.displayShortestPathEdges();
+    }
 
     // line(mouseX, mouseY, pmouseX, pmouseY);
     for (let i = 0; i < edges.length; i++) {
@@ -129,6 +135,7 @@ function mouseReleased() {
 function mousePressed() {
     // creating nodes
     if (isMouseClickedInsideCanvas() && checkboxes.nodeCheckbox.checked() && !checkboxes.edgeCheckbox.checked() && !checkboxes.shortestPathCheckbox.checked() && mouseIsPressed) {
+        // alert(`Please Click on the screen inside the board to draw a node: `)
         let circle = {
             x: mouseX,
             y: mouseY,
@@ -159,12 +166,12 @@ function mousePressed() {
             }
         }
     }
-    if (checkboxes.shortestPathCheckbox.checked()) {
-        console.log(`New graph created.`);
-        let graph = new Graph();
-        graph.implement_dijkstra();
-        graph.displayShortestPathEdges();
-    }
+    // if (checkboxes.shortestPathCheckbox.checked()) {
+    //     console.log(`New graph created.`);
+    //     let graph = new Graph();
+    //     graph.implement_dijkstra();
+    //     graph.displayShortestPathEdges();
+    // }
 
 }
 
