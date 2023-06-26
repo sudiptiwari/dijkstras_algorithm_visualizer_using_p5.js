@@ -29,6 +29,7 @@ function draw() {
     background(40, 40, 40);
     // edge_draw_flag = false;
     if (checkboxes.shortestPathCheckbox.checked()) {
+        shortestPathEdges = [];
         console.log(`New graph created.`);
         let graph = new Graph();
         graph.implement_dijkstra();
@@ -63,7 +64,6 @@ function draw() {
         textSize(20);
         textAlign(CENTER, CENTER);
         text(e2.weight, midX - midY / 40, midY - midX / 40);
-
     }
 
     // Loop through the array and display all the circles
@@ -269,7 +269,7 @@ class Graph {
         this.noOfNodes = circles.length;
         this.noOfEdges = edges.length;
         this.src = startNode - 1; // changed to startNode-1
-        this.des = endNode - 1; 
+        this.des = endNode - 1;
         this.sptSet = [];
         this.distToNodes = new Array(this.noOfNodes).fill(inf);
         this.distToNodes[this.src] = 0;
@@ -327,6 +327,25 @@ class Graph {
             let minIndex = -1;
             for (let i = 0; i < this.noOfNodes; i++) {
                 if (!visited[i] && (this.edgesMatrix[row][i] != -1) && (distance[row] + this.edgesMatrix[row][i]) <= distance[i]) {
+
+                    // block for step by step highlight of paths being checked
+                    for (let j = 0; j < edges.length; j++) {
+                        let e1 = edges[j];
+                        if ((e1.sourceCircle == row && e1.destCircle == i) || (e1.sourceCircle == i && e1.destCircle == row)) {
+                            stroke(255, 0, 0);
+                            line(e1.startX, e1.startY, e1.endX, e1.endY);
+                            // Calculate mid-point for showing e1.weight
+                            let midX = (e1.startX + e1.endX) / 2;
+                            let midY = (e1.startY + e1.endY) / 2;
+
+                            //Draw e1.weight above the line
+                            textSize(20);
+                            textAlign(CENTER, CENTER);
+                            text(e1.weight, midX - midY / 40, midY - midX / 40);
+                        }
+
+                    }
+
                     distance[i] = distance[row] + this.edgesMatrix[row][i];
                     parent[i] = row;
                 }
@@ -347,7 +366,7 @@ class Graph {
         }
 
         let temp_src = this.des;
-        for(let i = 0; i < this.noOfNodes; i++) {
+        for (let i = 0; i < this.noOfNodes; i++) {
             let edgeWeight = this.edgesMatrix[parent[temp_src]][temp_src];
             shortestPathEdges.push(new Edge(
                 circles[parent[temp_src]].x, circles[parent[temp_src]].y, parent[temp_src],
@@ -355,7 +374,7 @@ class Graph {
                 edgeWeight
             ));
             temp_src = parent[temp_src];
-            if(temp_src == this.src ) {
+            if (temp_src == this.src) {
                 break;
             }
         }
