@@ -12,6 +12,7 @@ let graph;
 const inf = 99999;
 let startNode = inf; // variable to store start node for algorithm implementation
 let endNode = inf;
+let dijkstra_run = false;
 
 function setup() {
     cnv = createCanvas(windowWidth / 1.2, windowHeight / 1.2);
@@ -28,12 +29,13 @@ function draw() {
     frameRate(60);
     background(40, 40, 40);
     // edge_draw_flag = false;
-    if (checkboxes.shortestPathCheckbox.checked()) {
+    if (checkboxes.shortestPathCheckbox.checked() && !dijkstra_run) {
         shortestPathEdges = [];
         console.log(`New graph created.`);
         let graph = new Graph();
         graph.implement_dijkstra();
         graph.displayShortestPathEdges();
+        dijkstra_run = true;
     }
 
     // line(mouseX, mouseY, pmouseX, pmouseY);
@@ -152,6 +154,7 @@ function mousePressed() {
             if (d_start < 25) {
                 startNode = circle.number;
                 console.log(`Node ${(startNode)} selected as start node`);
+                dijkstra_run = false;
             }
         }
     }
@@ -163,6 +166,7 @@ function mousePressed() {
             if (d_start < 25) {
                 endNode = circle.number;
                 console.log(`Node ${(endNode)} selected as end node`);
+                dijkstra_run = false;
             }
         }
     }
